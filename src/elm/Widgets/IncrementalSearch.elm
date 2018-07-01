@@ -75,7 +75,7 @@ view ({words, word} as model) =
 
 radio : Match -> String -> Model -> Html Msg
 radio match txt model =
-    label [] [
+    label [class "mr1"] [
         input [
             type_ "radio",
             name "match-type",
