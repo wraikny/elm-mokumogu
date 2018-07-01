@@ -5,8 +5,9 @@ import Html.Attributes exposing(class)
 import Html.Events exposing (onClick, onInput)
 
 import Widgets.TodoList as TodoList
-import Widgets.IncrementalSearch as IncSearch
+import Widgets.IncrementalSearch as IncrementalSearch
 import Widgets.TRPGDice as TRPGDice
+import Widgets.ToggleInput as ToggleInput
 
 
 main : Program Never Model Msg
@@ -22,24 +23,27 @@ main =
 type alias Model = {
         app : Apps,
         todoModel : TodoList.Model,
-        incModel : IncSearch.Model,
-        diceModel : TRPGDice.Model
+        incrModel : IncrementalSearch.Model,
+        diceModel : TRPGDice.Model,
+        toggModel : ToggleInput.Model
     }
 
 
 type Apps
     = Home
     | Todo
-    | Inc
+    | Incr
     | Dice
+    | Togg
 
 
 type Msg
     = BackToHome
     | Change Apps
     | TodoMsg TodoList.Msg
-    | IncMsg IncSearch.Msg
+    | IncMsg IncrementalSearch.Msg
     | DiceMsg TRPGDice.Msg
+    | ToggMsg ToggleInput.Msg
 
 
 
@@ -57,14 +61,19 @@ update msg model =
                 ({model | todoModel = updated}, Cmd.map TodoMsg cmd)
         IncMsg msg ->
             let (updated, cmd) =
-                IncSearch.update msg model.incModel
+                IncrementalSearch.update msg model.incrModel
             in
-                ({model | incModel = updated}, Cmd.map IncMsg cmd)
+                ({model | incrModel = updated}, Cmd.map IncMsg cmd)
         DiceMsg msg ->
             let (updated, cmd) =
                 TRPGDice.update msg model.diceModel
             in
                 ({model | diceModel = updated}, Cmd.map DiceMsg cmd)
+        ToggMsg msg ->
+            let (updated, cmd) =
+                ToggleInput.update msg model.toggModel
+            in
+                ({model | toggModel = updated}, Cmd.map ToggMsg cmd)
 
 
 
@@ -76,32 +85,29 @@ view model =
         div [class "ml2 mt2"] [
             case model.app of
                 Home ->
-                    div [] [
-                        div [] (
-                            appName Home
-                        ),
+                    div [class "home"] [
+                        div [] <| appName Home,
                         list
                     ]
                 Todo ->
-                    div [] [
-                        div [] (
-                            appName Todo
-                        ),
+                    div [class "todo"] [
+                        div [] <| appName Todo,
                         Html.map TodoMsg (TodoList.view model.todoModel)
                     ]
-                Inc ->
-                    div [] [
-                        div [] (
-                            appName Inc
-                        ),
-                        Html.map IncMsg (IncSearch.view model.incModel)
+                Incr ->
+                    div [class "incr"] [
+                        div [] <| appName Incr,
+                        Html.map IncMsg (IncrementalSearch.view model.incrModel)
                     ]
                 Dice ->
-                    div [] [
-                        div [] (
-                            appName Dice
-                        ),
+                    div [class "dice"] [
+                        div [] <| appName Dice,
                         Html.map DiceMsg (TRPGDice.view model.diceModel)
+                    ]
+                Togg ->
+                    div [class "togg"] [
+                        div [] <| appName Togg,
+                        Html.map ToggMsg (ToggleInput.view model.toggModel)
                     ]
 
         ]
@@ -125,8 +131,9 @@ nav =
 apps : List Apps
 apps = [
         Todo,
-        Inc,
-        Dice
+        Incr,
+        Dice,
+        Togg
     ]
 
 
@@ -136,8 +143,9 @@ appName app =
         case app of
         Home -> ("Home", "home")
         Todo -> ("ToDoList", "list-ul")
-        Inc -> ("Incremental Search", "search")
-        Dice -> ("TRPGDice", "dice")
+        Incr -> ("Incremental Search", "search")
+        Dice -> ("TRPG Dice", "dice")
+        Togg -> ("Toggle Input", "keyboard")
     in
     [
         i [class <| "fa fa-" ++ icon ++ " mr1"] [],
@@ -178,6 +186,7 @@ subscriptions model =
 init : (Model, Cmd Msg)
 init = 
     let (todoModel, _) = TodoList.init in
-    let (incModel, _) = IncSearch.init in
+    let (incrModel, _) = IncrementalSearch.init in
     let (diceModel, _) = TRPGDice.init in
-    (Model Home todoModel incModel diceModel, Cmd.none)
+    let (toggModel, _) = ToggleInput.init in
+    (Model Home todoModel incrModel diceModel toggModel, Cmd.none)
