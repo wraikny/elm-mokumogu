@@ -6,6 +6,7 @@ import Html.Events exposing (onClick, onInput)
 
 import Widgets.TodoList as TodoList
 import Widgets.IncrementalSearch as IncSearch
+import Widgets.TRPGDice as TRPGDice
 
 
 main : Program Never Model Msg
@@ -21,7 +22,8 @@ main =
 type alias Model = {
         app : Apps,
         todoModel : TodoList.Model,
-        incModel : IncSearch.Model 
+        incModel : IncSearch.Model,
+        diceModel : TRPGDice.Model
     }
 
 
@@ -29,6 +31,7 @@ type Apps
     = Home
     | Todo
     | Inc
+    | Dice
 
 
 type Msg
@@ -36,6 +39,7 @@ type Msg
     | Change Apps
     | TodoMsg TodoList.Msg
     | IncMsg IncSearch.Msg
+    | DiceMsg TRPGDice.Msg
 
 
 
@@ -47,17 +51,21 @@ update msg model =
         Change app ->
             ({model | app = app}, Cmd.none)
         TodoMsg msg ->
-            let
-                (updatedTodoModel, todoCmd) =
-                    TodoList.update msg model.todoModel
+            let (updated, cmd) =
+                TodoList.update msg model.todoModel
             in
-                ({model | todoModel = updatedTodoModel}, Cmd.map TodoMsg todoCmd)
+                ({model | todoModel = updated}, Cmd.map TodoMsg cmd)
         IncMsg msg ->
-            let
-                (updatedIncModel, todoCmd) =
-                    IncSearch.update msg model.incModel
+            let (updated, cmd) =
+                IncSearch.update msg model.incModel
             in
-                ({model | incModel = updatedIncModel}, Cmd.map IncMsg todoCmd)
+                ({model | incModel = updated}, Cmd.map IncMsg cmd)
+        DiceMsg msg ->
+            let (updated, cmd) =
+                TRPGDice.update msg model.diceModel
+            in
+                ({model | diceModel = updated}, Cmd.map DiceMsg cmd)
+
 
 
 
@@ -69,28 +77,33 @@ view model =
             case model.app of
                 Home ->
                     div [] [
-                        div [] [
-                            i [class "fa fa-home mr1"] [],
-                            text "Home"
-                        ],
+                        div [] (
+                            appName Home
+                        ),
                         list
                     ]
                 Todo ->
                     div [] [
-                        div [] [
-                            i [class "fa fa-list-ul mr1"] [],
-                            text "ToDoList"
-                        ],
+                        div [] (
+                            appName Todo
+                        ),
                         Html.map TodoMsg (TodoList.view model.todoModel)
                     ]
                 Inc ->
-                div [] [
                     div [] [
-                            i [class "fa fa-search mr1"] [],
-                            text "Incremental Search"
-                        ],
+                        div [] (
+                            appName Inc
+                        ),
                         Html.map IncMsg (IncSearch.view model.incModel)
-                ]
+                    ]
+                Dice ->
+                    div [] [
+                        div [] (
+                            appName Dice
+                        ),
+                        Html.map DiceMsg (TRPGDice.view model.diceModel)
+                    ]
+
         ]
     ]
 
@@ -102,11 +115,33 @@ nav =
             button [
                 class "btn regular",
                 onClick BackToHome
-            ] [
-                i [ class "fa fa-home mr1" ] [],
-                text "Home"
-            ]
+            ] (
+                appName Home
+            )
         ]
+    ]
+
+
+apps : List Apps
+apps = [
+        Todo,
+        Inc,
+        Dice
+    ]
+
+
+appName : Apps -> List (Html Msg)
+appName app = 
+    let (name, icon) =
+        case app of
+        Home -> ("Home", "home")
+        Todo -> ("ToDoList", "list-ul")
+        Inc -> ("Incremental Search", "search")
+        Dice -> ("TRPGDice", "dice")
+    in
+    [
+        i [class <| "fa fa-" ++ icon ++ " mr1"] [],
+        text name
     ]
 
 
@@ -114,26 +149,22 @@ list : Html Msg
 list =
     div [class "p2"] [
         ul [] (
-            [
-                ("ToDoList", Change Todo, "list-ul"),
-                ("Incremental Search", Change Inc, "search")
-            ]
-            |> List.map (\x -> row x)
+            apps
+            |> List.map (\x -> row <| x)
         )
     ]
 
 
 
-row : (String, Msg, String) -> Html Msg
-row (appName, appMsg, btnType) =
+row : Apps -> Html Msg
+row app =
     li [] [
         button [
             class "btn regular",
-            onClick <| appMsg
-        ] [
-            i [class <| "fa fa-" ++ btnType ++ " mr1"] [],
-            text appName
-        ]
+            onClick <| Change app
+        ] (
+            appName app
+        )
     ]
 
 
@@ -148,4 +179,5 @@ init : (Model, Cmd Msg)
 init = 
     let (todoModel, _) = TodoList.init in
     let (incModel, _) = IncSearch.init in
-    (Model Home todoModel incModel, Cmd.none)
+    let (diceModel, _) = TRPGDice.init in
+    (Model Home todoModel incModel diceModel, Cmd.none)
