@@ -1,11 +1,10 @@
 {
     "version": "1.0.0",
-    "summary": "helpful summary of your project, less than 80 characters",
+    "summary": "elm-mokumogu",
     "repository": "https://github.com/wraikny/elm-mokumogu.git",
     "license": "BSD3",
     "source-directories": [
-        "src",
-        "src/TodoList"
+        "src"
     ],
     "exposed-modules": [],
     "dependencies": {
