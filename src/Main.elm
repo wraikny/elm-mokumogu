@@ -3,6 +3,7 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing(class, href, target)
 import Html.Events exposing (onClick, onInput)
+import Navigation
 
 import Widgets.TodoList as TodoList
 import Widgets.IncrementalSearch as IncrementalSearch
@@ -65,9 +66,9 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         BackToHome ->
-            ({model | app = Home}, Cmd.none)
+            ({model | app = Home}, Navigation.newUrl "#home")
         Change app ->
-            ({model | app = app}, Cmd.none)
+            ({model | app = app}, Navigation.newUrl <| "#" ++ appShortName app)
         TodoMsg msg ->
             let (updated, cmd) =
                 TodoList.update msg model.todoModel
@@ -164,6 +165,17 @@ nav =
 
 apps : List Apps
 apps = [Todo, Incr, Dice, Togg, Omkj]
+
+
+appShortName : Apps -> String
+appShortName app =
+    case app of
+        Home -> "home"
+        Todo -> "todo"
+        Incr -> "incr"
+        Dice -> "dice"
+        Togg -> "togg"
+        Omkj -> "omkj"
 
 
 appName : Apps -> List (Html Msg)
