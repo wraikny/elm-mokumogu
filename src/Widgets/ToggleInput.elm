@@ -44,18 +44,24 @@ update msg model =
             let (text, index) =
                 if key == model.key then
                     let index = (model.index + 1) % (keys key |> List.length) in
-                    (model.text, index)
+                    if index == model.index then
+                        addText model
+                    else
+                        (model.text, index)
                 else
-                    let array = keys model.key |> Array.fromList in
-                    let s = case array |> Array.get model.index of
-                        Just a -> a
-                        Nothing -> ""
-                    in
-                    (model.text ++ s, 0)
+                    addText model
             in
                 ( {text = text, key = key, index = index}, Cmd.none )
 
 
+addText : Model -> ( String, Int)
+addText model =
+    let array = keys model.key |> Array.fromList in
+        let s = case array |> Array.get model.index of
+            Just a -> a
+            Nothing -> ""
+        in
+            (model.text ++ s, 0)
 
 -- VIEW
 
@@ -109,7 +115,11 @@ keys key =
         Asterisk -> "*"
         Sharp -> "#"
     in
-        s |> String.split ""
+        let list = s |> String.split ""
+        in
+            if (list |> List.length) == 0 then
+                list ++ [""]
+            else list
 
 
 btnKey : Key -> String
@@ -126,10 +136,10 @@ makeBtn : Key -> Html Msg
 makeBtn key =
     button [
         class (
-            let n = case key of
-                Enter -> "return "
-                _ -> ""
-            in n ++ "button btn regular"),
+        let n = case key of
+            Enter -> "return "
+            _ -> ""
+        in n ++ "button btn regular"),
         onClick <| InputKey key
     ] [
         span [
