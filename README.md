@@ -2,7 +2,7 @@
 「Elmもくもぐ」(ハッシュタグ [#moku2_elm](https://twitter.com/search?f=tweets&vertical=default&q=%23moku2_elm))のお題です。
 
 ## Install
-`$ elm package install elm-lang/html elm-lang/navigation`  
+`$ elm package install elm-lang/html elm-lang/navigation evancz/url-parser`  
 ## Compile  
 ### Debug  
 `$ elm reactor`  
