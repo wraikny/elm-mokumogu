@@ -3,17 +3,28 @@ module Routing exposing (..)
 import Navigation exposing (Location)
 import UrlParser exposing (..)
 
+
 type Route
-    = App String
+    = Home
+    | Todo
+    | Incr
+    | Dice
+    | Togg
+    | Omkj
     | NotFoundRoute
 
 
 matchers : Parser (Route -> a) a
 matchers =
-    oneOf
-        [ map App top
-        , map App string
-        ]
+    oneOf [
+        map Home top,
+        map Home (s "home"),
+        map Todo (s "todo"),
+        map Incr (s "incr"),
+        map Dice (s "dice"),
+        map Togg (s "togg"),
+        map Omkj (s "omkj")
+    ]
 
 parseLocation : Location -> Route
 parseLocation location =

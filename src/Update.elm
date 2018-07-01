@@ -2,6 +2,7 @@ module Update exposing (..)
 
 import Model exposing(..)
 import Msgs exposing(..)
+import Routing exposing (parseLocation)
 
 import Widgets.TodoList as TodoList
 import Widgets.IncrementalSearch as IncrementalSearch
@@ -13,10 +14,9 @@ import Widgets.Omikuji as Omikuji
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        UrlChange location ->
-            ({model | history = location :: model.history}, Cmd.none)
-        Change app ->
-            ({model | app = app}, Cmd.none)
+        OnLocationChange location ->
+            let newRoute = parseLocation location in
+            ({model | route = newRoute}, Cmd.none)
         TodoMsg msg ->
             let (updated, cmd) =
                 TodoList.update msg model.todoModel

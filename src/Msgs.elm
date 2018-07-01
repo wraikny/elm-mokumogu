@@ -1,6 +1,6 @@
 module Msgs exposing (..)
 
-import Navigation
+import Navigation exposing (Location)
 
 import Widgets.TodoList as TodoList
 import Widgets.IncrementalSearch as IncrementalSearch
@@ -9,18 +9,8 @@ import Widgets.ToggleInput as ToggleInput
 import Widgets.Omikuji as Omikuji
 
 
-type Apps
-    = Home
-    | Todo
-    | Incr
-    | Dice
-    | Togg
-    | Omkj
-
-
 type Msg
-    = UrlChange Navigation.Location
-    | Change Apps
+    = OnLocationChange Location
     | TodoMsg TodoList.Msg
     | IncMsg IncrementalSearch.Msg
     | DiceMsg TRPGDice.Msg
