@@ -34,7 +34,6 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({task, todos, nextid} as model) =
-    -- implements your code
     case msg of
         InputText inputTask ->
             ({model | task = inputTask}, Cmd.none)
