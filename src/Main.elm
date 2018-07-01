@@ -8,6 +8,10 @@ import Widgets.TodoList as TodoList
 import Widgets.IncrementalSearch as IncrementalSearch
 import Widgets.TRPGDice as TRPGDice
 import Widgets.ToggleInput as ToggleInput
+import Widgets.Omikuji as Omikuji
+
+
+-- MAIN
 
 
 main : Program Never Model Msg
@@ -20,12 +24,16 @@ main =
     }
 
 
+
+-- MODEL
+
 type alias Model = {
         app : Apps,
         todoModel : TodoList.Model,
         incrModel : IncrementalSearch.Model,
         diceModel : TRPGDice.Model,
-        toggModel : ToggleInput.Model
+        toggModel : ToggleInput.Model,
+        omkjModel : Omikuji.Model
     }
 
 
@@ -35,6 +43,11 @@ type Apps
     | Incr
     | Dice
     | Togg
+    | Omkj
+
+
+
+-- UPDATE
 
 
 type Msg
@@ -44,6 +57,7 @@ type Msg
     | IncMsg IncrementalSearch.Msg
     | DiceMsg TRPGDice.Msg
     | ToggMsg ToggleInput.Msg
+    | OmkjMsg Omikuji.Msg
 
 
 
@@ -74,8 +88,15 @@ update msg model =
                 ToggleInput.update msg model.toggModel
             in
                 ({model | toggModel = updated}, Cmd.map ToggMsg cmd)
+        OmkjMsg msg ->
+            let (updated, cmd) =
+                Omikuji.update msg model.omkjModel
+            in
+                ({model | omkjModel = updated}, Cmd.map OmkjMsg cmd)
 
 
+
+-- VIEW
 
 
 view : Model -> Html Msg
@@ -83,35 +104,42 @@ view model =
     div [] [
         nav,
         div [class "ml2 mt2"] [
+            let name = div [] <| appName model.app in
             case model.app of
                 Home ->
                     div [class "home"] [
-                        div [] <| appName Home,
+                        name,
                         list
                     ]
                 Todo ->
                     div [class "todo"] [
-                        div [] <| appName Todo,
+                        name,
                         Html.map TodoMsg (TodoList.view model.todoModel)
                     ]
                 Incr ->
                     div [class "incr"] [
-                        div [] <| appName Incr,
+                        name,
                         Html.map IncMsg (IncrementalSearch.view model.incrModel)
                     ]
                 Dice ->
                     div [class "dice"] [
-                        div [] <| appName Dice,
+                        name,
                         Html.map DiceMsg (TRPGDice.view model.diceModel)
                     ]
                 Togg ->
                     div [class "togg"] [
-                        div [] <| appName Togg,
+                        name,
                         Html.map ToggMsg (ToggleInput.view model.toggModel)
+                    ]
+                Omkj ->
+                    div [class "omkj"] [
+                        name,
+                        Html.map OmkjMsg (Omikuji.view model.omkjModel)
                     ]
 
         ]
     ]
+
 
 
 nav : Html Msg
@@ -129,12 +157,7 @@ nav =
 
 
 apps : List Apps
-apps = [
-        Todo,
-        Incr,
-        Dice,
-        Togg
-    ]
+apps = [Todo, Incr, Dice, Togg, Omkj]
 
 
 appName : Apps -> List (Html Msg)
@@ -146,6 +169,7 @@ appName app =
         Incr -> ("Incremental Search", "search")
         Dice -> ("TRPG Dice", "dice")
         Togg -> ("Toggle Input", "keyboard")
+        Omkj -> ("Omikuji", "random")
     in
     [
         i [class <| "fa fa-" ++ icon ++ " mr1"] [],
@@ -156,12 +180,8 @@ appName app =
 list : Html Msg
 list =
     div [class "p2"] [
-        ul [] (
-            apps
-            |> List.map (\x -> row <| x)
-        )
+        ul [] (apps |> List.map row)
     ]
-
 
 
 row : Apps -> Html Msg
@@ -170,9 +190,7 @@ row app =
         button [
             class "btn regular",
             onClick <| Change app
-        ] (
-            appName app
-        )
+        ] (appName app)
     ]
 
 
@@ -189,4 +207,5 @@ init =
     let (incrModel, _) = IncrementalSearch.init in
     let (diceModel, _) = TRPGDice.init in
     let (toggModel, _) = ToggleInput.init in
-    (Model Home todoModel incrModel diceModel toggModel, Cmd.none)
+    let (omkjModel, _) = Omikuji.init in
+    (Model Home todoModel incrModel diceModel toggModel omkjModel, Cmd.none)
