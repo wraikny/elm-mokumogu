@@ -2,7 +2,7 @@ module Widgets.IncrementalSearch exposing (Model, init, Msg, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing(..)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onInput, onClick)
 
 
 -- MODEL
@@ -10,13 +10,20 @@ import Html.Events exposing (onInput)
 
 type alias Model = {
         word : String,
-        words : List String
+        words : List String,
+        match : Match
     }
 
 
 init : (Model, Cmd Msg)
 init =
-    (Model "" words, Cmd.none)
+    (Model "" words Partial, Cmd.none)
+
+
+type Match
+    = Partial
+    | Forward
+    | Backward
 
 
 
@@ -25,14 +32,16 @@ init =
 
 type Msg
     = SearchText String
+    | SwitchTo Match
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ words, word } as model) =
-    -- implements your code
     case msg of
         SearchText word ->
             ( {model | word=word}, Cmd.none )
+        SwitchTo match ->
+            ( {model | match = match}, Cmd.none )
 
 
 
@@ -40,27 +49,51 @@ update msg ({ words, word } as model) =
 
 
 view : Model -> Html Msg
-view { words, word } =
+view ({words, word} as model) =
     div [] [
         div [class "p1"] [
             input [
                 placeholder "Search...",
                 value word,
                 onInput SearchText
-            ] []
+            ] [],
+            fieldset [] [
+                model |> radio Partial "Partial",
+                model |> radio Forward "Forward",
+                model |> radio Backward "Backward"
+            ]
         ],
-        searchList word
+        searchList model
     ]
 
 
-searchList : String -> Html Msg
-searchList word =
+radio : Match -> String -> Model -> Html Msg
+radio match txt model =
+    label [] [
+        input [
+            type_ "radio",
+            name "match-type",
+            checked (model.match == match),
+            onClick <| SwitchTo match
+        ] [],
+        text txt
+    ]
+
+
+searchList : Model -> Html Msg
+searchList {words, word, match} =
     ul [] (
         words
-        |> List.filter (\x -> x |> String.contains word)
-        |> List.map (\x ->
-            li [] [ text x ]
+        |> List.filter (\x ->
+            let z = "*" in
+            let (nw, nx) = case match of
+                Partial -> (word,  x)
+                Forward -> (z ++ word, z ++ x)
+                Backward -> (word ++ z, x ++ z)
+            in
+                String.contains nw nx
         )
+        |> List.map (\x -> li [] [ text x ])
     )
 
 
