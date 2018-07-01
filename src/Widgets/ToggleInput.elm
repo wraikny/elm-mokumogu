@@ -31,15 +31,12 @@ init =
 
 
 type Msg
-    = NoOp
-    | InputKey Key
+    = InputKey Key
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
         InputKey key ->
             let (text, index) =
                 if key == model.key then
