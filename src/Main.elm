@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing(class)
+import Html.Attributes exposing(class, href, target)
 import Html.Events exposing (onClick, onInput)
 
 import Widgets.TodoList as TodoList
@@ -61,7 +61,7 @@ type Msg
 
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         BackToHome ->
@@ -109,6 +109,14 @@ view model =
                 Home ->
                     div [class "home"] [
                         name,
+                        p [] [
+                            text "「Elmもくもぐ」(ハッシュタグ ",
+                            a [
+                                href "https://twitter.com/search?f=tweets&vertical=default&q=%23moku2_elm",
+                                target "_blank"
+                            ] [ text "#moku2_elm" ],
+                            text ")のお題です。"
+                        ],
                         list
                     ]
                 Todo ->
@@ -136,10 +144,8 @@ view model =
                         name,
                         Html.map OmkjMsg (Omikuji.view model.omkjModel)
                     ]
-
         ]
     ]
-
 
 
 nav : Html Msg
@@ -192,8 +198,6 @@ row app =
             onClick <| Change app
         ] (appName app)
     ]
-
-
 
 
 subscriptions : Model -> Sub Msg

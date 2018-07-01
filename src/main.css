@@ -43,3 +43,8 @@ button.button:hover {
   grid-row: 0;
   grid-column: span 3;
 }
+
+li {
+  margin : 0 -3em;
+  list-style: none;
+}
