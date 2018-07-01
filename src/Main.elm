@@ -57,10 +57,21 @@ view model =
         div [class "ml2 mt2"] [
             case model.app of
                 Home ->
-                    list
-                
+                    div [] [
+                        div [] [
+                            i [class "fa fa-home mr1"] [],
+                            text "Home"
+                        ],
+                        list
+                    ]
                 Todo ->
-                    Html.map TodoMsg (TodoList.view model.todoModel)
+                    div [] [
+                        div [] [
+                            i [class "fa fa-list-ul mr1"] [],
+                            text "ToDoList"
+                        ],
+                        Html.map TodoMsg (TodoList.view model.todoModel)
+                    ]
         ]
     ]
 
@@ -73,18 +84,16 @@ nav =
                 class "btn regular",
                 onClick BackToHome
             ] [
-                i [ class "fa fa-home mr1" ] [
-                    text "Home"
-                ]
+                i [ class "fa fa-home mr1" ] [],
+                text "Home"
             ]
-        ] 
+        ]
     ]
 
 
 list : Html Msg
 list =
     div [class "p2"] [
-        div [] [text "Widgets"],
         table [] [
             tbody [] (
                 [
@@ -100,13 +109,13 @@ list =
 row : (String, Msg, String) -> Html Msg
 row (appName, appMsg, btnType) =
     tr [] [
-        td [] [text appName],
         td [] [
             button [
                 class "btn regular",
                 onClick <| appMsg
             ] [
-                i [class <| "fa fa-" ++ btnType ++ " mr1"] []
+                i [class <| "fa fa-" ++ btnType ++ " mr1"] [],
+                text appName
             ]
         ]
     ]
