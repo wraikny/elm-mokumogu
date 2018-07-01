@@ -5,6 +5,7 @@ import Html.Attributes exposing(class)
 import Html.Events exposing (onClick, onInput)
 
 import Widgets.TodoList as TodoList
+import Widgets.IncrementalSearch as IncSearch
 
 
 main : Program Never Model Msg
@@ -19,18 +20,22 @@ main =
 
 type alias Model = {
         app : Apps,
-        todoModel : TodoList.Model
+        todoModel : TodoList.Model,
+        incModel : IncSearch.Model 
     }
 
 
 type Apps
     = Home
     | Todo
+    | Inc
 
 
 type Msg
     = BackToHome
+    | Change Apps
     | TodoMsg TodoList.Msg
+    | IncMsg IncSearch.Msg
 
 
 
@@ -39,14 +44,20 @@ update msg model =
     case msg of
         BackToHome ->
             ({model | app = Home}, Cmd.none)
-        TodoMsg TodoList.New ->
-            ({model | app = Todo}, Cmd.none)
+        Change app ->
+            ({model | app = app}, Cmd.none)
         TodoMsg msg ->
             let
                 (updatedTodoModel, todoCmd) =
                     TodoList.update msg model.todoModel
             in
                 ({model | todoModel = updatedTodoModel}, Cmd.map TodoMsg todoCmd)
+        IncMsg msg ->
+            let
+                (updatedIncModel, todoCmd) =
+                    IncSearch.update msg model.incModel
+            in
+                ({model | incModel = updatedIncModel}, Cmd.map IncMsg todoCmd)
 
 
 
@@ -72,6 +83,14 @@ view model =
                         ],
                         Html.map TodoMsg (TodoList.view model.todoModel)
                     ]
+                Inc ->
+                div [] [
+                    div [] [
+                            i [class "fa fa-search mr1"] [],
+                            text "Incremental Search"
+                        ],
+                        Html.map IncMsg (IncSearch.view model.incModel)
+                ]
         ]
     ]
 
@@ -94,29 +113,26 @@ nav =
 list : Html Msg
 list =
     div [class "p2"] [
-        table [] [
-            tbody [] (
-                [
-                    ("ToDoList", TodoMsg TodoList.New, "list-ul")
-                ]
-                |> List.map (\x -> row x)
-            )
-        ]
+        ul [] (
+            [
+                ("ToDoList", Change Todo, "list-ul"),
+                ("Incremental Search", Change Inc, "search")
+            ]
+            |> List.map (\x -> row x)
+        )
     ]
 
 
 
 row : (String, Msg, String) -> Html Msg
 row (appName, appMsg, btnType) =
-    tr [] [
-        td [] [
-            button [
-                class "btn regular",
-                onClick <| appMsg
-            ] [
-                i [class <| "fa fa-" ++ btnType ++ " mr1"] [],
-                text appName
-            ]
+    li [] [
+        button [
+            class "btn regular",
+            onClick <| appMsg
+        ] [
+            i [class <| "fa fa-" ++ btnType ++ " mr1"] [],
+            text appName
         ]
     ]
 
@@ -131,4 +147,5 @@ subscriptions model =
 init : (Model, Cmd Msg)
 init = 
     let (todoModel, _) = TodoList.init in
-    (Model Home todoModel, Cmd.none)
+    let (incModel, _) = IncSearch.init in
+    (Model Home todoModel incModel, Cmd.none)
