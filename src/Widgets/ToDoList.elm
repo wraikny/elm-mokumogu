@@ -1,11 +1,15 @@
-module Widgets.TodoList exposing (..)
+module Widgets.TodoList exposing (Model, init, Msg, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 
 
+-- MODEL
+
+
 type alias TodoId = Int
+
 
 type alias Model = {
         task: String, 
@@ -18,24 +22,20 @@ init : (Model, Cmd Msg)
 init = (Model "" [(0, "sample")] 1, Cmd.none)
 
 
--- MESSSAGES
+
+-- UPDATE
+
 
 type Msg
-    = New
-    | InputText String
+    = InputText String
     | AddTask
     | RemoveTodo TodoId
 
-
-
--- UPDATE
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({task, todos, nextid} as model) =
     -- implements your code
     case msg of
-        New ->
-            (model, Cmd.none)
         InputText inputTask ->
             ({model | task = inputTask}, Cmd.none)
         AddTask -> 
@@ -54,6 +54,7 @@ update msg ({task, todos, nextid} as model) =
 
 
 -- VIEW
+
 
 view : Model -> Html Msg
 view {task, todos} =
@@ -82,6 +83,7 @@ list todos =
             (todos |> List.reverse |> List.map todoRow)
         ]
     ]
+
 
 todoRow : (TodoId, String) -> Html Msg
 todoRow (id, todo) =
