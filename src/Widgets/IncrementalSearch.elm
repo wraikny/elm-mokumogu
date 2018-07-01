@@ -57,13 +57,19 @@ view ({words, word} as model) =
                 value word,
                 onInput SearchText
             ] [],
-            fieldset [] [
-                model |> radio Partial "Partial",
-                model |> radio Forward "Forward",
-                model |> radio Backward "Backward"
+            div [] [
+                div [class "radio mt2"] [
+                    fieldset [] [
+                        model |> radio Partial "Partial",
+                        model |> radio Forward "Forward",
+                        model |> radio Backward "Backward"
+                    ]
+                ],
+                div [] [
+                    searchList model
+                ]
             ]
-        ],
-        searchList model
+        ]
     ]
 
 
@@ -82,7 +88,7 @@ radio match txt model =
 
 searchList : Model -> Html Msg
 searchList {words, word, match} =
-    ul [] (
+    ul [class "ml2"] (
         words
         |> List.filter (\x ->
             let z = "*" in

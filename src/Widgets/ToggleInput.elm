@@ -65,7 +65,7 @@ addText model =
 
 view : Model -> Html Msg
 view model =
-    div [] [
+    div [class "togg-all"] [
         div [class "display"] [
             textarea [
                 class "display-text",
