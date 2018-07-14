@@ -8,7 +8,8 @@ import Html.Events exposing (onClick, onInput)
 -- MODEL
 
 
-type alias Model = {}
+type alias Model =
+    {}
 
 
 init : ( Model, Cmd Msg )
@@ -42,8 +43,6 @@ pattern =
 
 view : Model -> Html Msg
 view model =
-    div [] [
-        div [] [
-            
+    div []
+        [ div [] []
         ]
-    ]

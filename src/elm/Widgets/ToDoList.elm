@@ -11,15 +11,15 @@ import Html.Events exposing (onClick, onInput)
 type alias TodoId = Int
 
 
-type alias Model = {
-        task: String, 
-        todos: List (TodoId, String),
-        nextid: TodoId
+type alias Model =
+    { task: String
+    , todos: List (TodoId, String)
+    , nextid: TodoId
     }
 
 
-init : (Model, Cmd Msg)
-init = (Model "" [(0, "sample")] 1, Cmd.none)
+init : ( Model, Cmd Msg )
+init = ( Model "" [(0, "sample")] 1, Cmd.none )
 
 
 
@@ -36,9 +36,11 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({task, todos, nextid} as model) =
     case msg of
         InputText inputTask ->
-            ({model | task = inputTask}, Cmd.none)
+            ( {model | task = inputTask}, Cmd.none )
+        
         AddTask -> 
-            (Model "" ((nextid, task) :: todos) (nextid + 1), Cmd.none)
+            ( Model "" ((nextid, task) :: todos) (nextid + 1), Cmd.none )
+        
         RemoveTodo id ->
             let
                 newTodos = todos |> List.filter (\(x, _) -> x /= id)
@@ -48,7 +50,7 @@ update msg ({task, todos, nextid} as model) =
                         Just id -> id + 1
                         Nothing -> 0
                 in
-                    ({model | todos = newTodos, nextid = newNextId}, Cmd.none)
+                    ( {model | todos = newTodos, nextid = newNextId}, Cmd.none )
 
 
 
@@ -57,43 +59,46 @@ update msg ({task, todos, nextid} as model) =
 
 view : Model -> Html Msg
 view {task, todos} =
-    div [] [
-        div [class "p1"] [
-            input [
-                placeholder "New Task",
-                value task,
-                onInput InputText
-            ] [],
-            button [
-                class "btn regular",
-                onClick AddTask
-            ] [
-                i [ class "fa fa-plus-circle mr1" ] []
+    div []
+        [ div [class "p1"]
+            [ input
+                [ placeholder "New Task"
+                , value task
+                , onInput InputText
+                ] []
+            , button
+                [ class "btn regular"
+                , onClick AddTask
+                ]
+                [ i 
+                    [ class "fa fa-plus-circle mr1"
+                    ] []
+                ]
             ]
-        ],
-        list todos
-    ]
+        , list todos
+        ]
 
 
 list : List (TodoId, String) -> Html Msg
 list todos =
-    div [class "p2"] [
-        table [] [tbody []
-            (todos |> List.reverse |> List.map todoRow)
-        ]
-    ]
-
-
-todoRow : (TodoId, String) -> Html Msg
-todoRow (id, todo) =
-    tr [] [
-        td [] [text todo],
-        td [] [
-            button [
-                class "btn regular",
-                onClick <| RemoveTodo id
-            ] [
-                i [ class "fa fa-trash-alt mr1" ] []
+    div [class "p2"]
+        [ table []
+            [ tbody []
+                ( todos |> List.reverse |> List.map todoRow )
             ]
         ]
-    ]
+
+
+todoRow : ( TodoId, String ) -> Html Msg
+todoRow ( id, todo ) =
+    tr []
+        [ td [] [text todo]
+        , td []
+            [ button
+                [ class "btn regular"
+                , onClick <| RemoveTodo id
+                ]
+                [ i [ class "fa fa-trash-alt mr1" ] []
+                ]
+            ]
+        ]

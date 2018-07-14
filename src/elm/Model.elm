@@ -11,13 +11,13 @@ import Widgets.TRPGDice as TRPGDice
 import Widgets.ToggleInput as ToggleInput
 import Widgets.Omikuji as Omikuji
 
-type alias Model = {
-        route : Routing.Route,
-        todoModel : TodoList.Model,
-        incrModel : IncrementalSearch.Model,
-        diceModel : TRPGDice.Model,
-        toggModel : ToggleInput.Model,
-        omkjModel : Omikuji.Model
+type alias Model =
+    { route : Routing.Route
+    , todoModel : TodoList.Model
+    , incrModel : IncrementalSearch.Model
+    , diceModel : TRPGDice.Model
+    , toggModel : ToggleInput.Model
+    , omkjModel : Omikuji.Model
     }
 
 

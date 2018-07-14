@@ -23,11 +23,11 @@ import Widgets.Omikuji as Omikuji
 
 main : Program Never Model Msg
 main =
-    Navigation.program OnLocationChange {
-        init = init,
-        view = view,
-        update = update,
-        subscriptions = subscriptions
+    Navigation.program OnLocationChange 
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = subscriptions
     }
 
 

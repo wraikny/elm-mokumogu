@@ -9,21 +9,22 @@ import Array
 -- MODEL
 
 
-type alias Model = {
-    text : String,
-    index : Int,
-    key : Key
-}
+type alias Model =
+    { text : String
+    , index : Int
+    , key : Key
+    }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ({
-        text = "こんにちは　えるむ",
-        index = 0,
-        key = Enter
-    }
-    , Cmd.none )
+    (
+        { text = "こんにちは　えるむ"
+        , index = 0
+        , key = Enter
+        }
+    , Cmd.none
+    )
 
 
 
@@ -40,11 +41,12 @@ update msg model =
         InputKey key ->
             let (text, index) =
                 if key == model.key then
-                    let index = (model.index + 1) % (keys key |> List.length) in
-                    if index == model.index then
-                        addText model
-                    else
-                        (model.text, index)
+                    let index = (model.index + 1) % (keys key |> List.length)
+                    in
+                        if index == model.index then
+                            addText model
+                        else
+                            (model.text, index)
                 else
                     addText model
             in
@@ -58,32 +60,34 @@ addText model =
             Just a -> a
             Nothing -> ""
         in
-            (model.text ++ s, 0)
+            ( model.text ++ s, 0 )
 
 -- VIEW
 
 
 view : Model -> Html Msg
 view model =
-    div [class "togg-all"] [
-        div [class "display"] [
-            textarea [
-                class "display-text",
-                readonly True,
-                wrap "hard",
-                value (
-                    let c = case keys model.key |> Array.fromList |> Array.get model.index of
-                        Just a -> a
-                        Nothing -> ""
-                    in
-                    model.text ++ c
-                )
-            ] []
+    div [class "togg-all"]
+        [ div [class "display"]
+            [ textarea
+                [ class "display-text"
+                , readonly True
+                , wrap "hard"
+                , value
+                    (
+                        let c = case keys model.key |> Array.fromList |> Array.get model.index of
+                            Just a -> a
+                            Nothing -> ""
+                        in
+                        model.text ++ c
+                    )
+                ] []
         ],
-        div [class "keyboard"] (
-            Enter :: (List.range 1 9 |> List.map Num) ++ [Asterisk, Num 0, Sharp]
-            |> List.map makeBtn
-        )
+        div [class "keyboard"]
+            (
+                Enter :: (List.range 1 9 |> List.map Num) ++ [ Asterisk, Num 0, Sharp ]
+                |> List.map makeBtn
+            )
     ]
 
 
@@ -131,21 +135,23 @@ btnKey key =
 
 makeBtn : Key -> Html Msg
 makeBtn key =
-    button [
-        class (
-        let n = case key of
-            Enter -> "return "
-            _ -> ""
-        in n ++ "button btn regular"),
-        onClick <| InputKey key
-    ] [
-        span [
-            class ("icon" ++ case key of
-                Enter -> " is-medium"
+    button
+    [ class (
+            let n = case key of
+                Enter -> "return "
                 _ -> ""
+            in n ++ "button btn regular"
+        )
+    , onClick <| InputKey key
+    ]
+    [ span
+        [ class (
+                "icon" ++ case key of
+                    Enter -> " is-medium"
+                    _ -> ""
             )
-        ] [
-            text <| (
+        ]
+        [ text <| (
                 let n = case key of
                     Num x -> toString x ++ " "
                     _ -> ""

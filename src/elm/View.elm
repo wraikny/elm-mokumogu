@@ -22,43 +22,50 @@ view model =
             let name = div [] <| appName model.route in
             case model.route of
                 Home ->
-                    div [class "home"] [
-                        name,
-                        p [] [
-                            text "「Elmもくもぐ」(ハッシュタグ ",
-                            a [
-                                href "https://twitter.com/search?f=tweets&vertical=default&q=%23moku2_elm",
-                                target "_blank"
-                            ] [ text "#moku2_elm" ],
-                            text ")のお題です。"
-                        ],
-                        list
+                    div [class "home"] 
+                        [ name
+                        , p []
+                            [ text "「Elmもくもぐ」(ハッシュタグ "
+                            , a 
+                                [ href "https://twitter.com/search?f=tweets&vertical=default&q=%23moku2_elm"
+                                , target "_blank"
+                                ]
+                                [ text "#moku2_elm" ]
+                            , text ")のお題です。"
+                            ]
+                        , list
                     ]
+                
                 Todo ->
-                    div [class "todo"] [
-                        name,
-                        Html.map TodoMsg (TodoList.view model.todoModel)
-                    ]
+                    div [class "todo"]
+                        [ name
+                        , Html.map TodoMsg (TodoList.view model.todoModel)
+                        ]
+                
                 Incr ->
-                    div [class "incr"] [
-                        name,
-                        Html.map IncMsg (IncrementalSearch.view model.incrModel)
-                    ]
+                    div [class "incr"]
+                        [ name
+                        , Html.map IncMsg (IncrementalSearch.view model.incrModel)
+                        ]
+                
                 Dice ->
-                    div [class "dice"] [
-                        name,
-                        Html.map DiceMsg (TRPGDice.view model.diceModel)
-                    ]
+                    div [class "dice"]
+                        [ name
+                        , Html.map DiceMsg (TRPGDice.view model.diceModel)
+                        ]
+                
                 Togg ->
-                    div [class "togg"] [
-                        name,
-                        Html.map ToggMsg (ToggleInput.view model.toggModel)
-                    ]
+                    div [class "togg"]
+                        [ name
+                        , Html.map ToggMsg (ToggleInput.view model.toggModel)
+                        ]
+                
                 Omkj ->
-                    div [class "omkj"] [
-                        name,
-                        Html.map OmkjMsg (Omikuji.view model.omkjModel)
-                    ]
+                    div [class "omkj"]
+                        [ name
+                        , Html.map OmkjMsg (Omikuji.view model.omkjModel)
+                        ]
+                
                 NotFoundRoute ->
                     div [] [
                         text "Not found"
@@ -69,20 +76,25 @@ view model =
 
 nav : Html Msg
 nav =
-    div [class "clearfix mb2 white bg-black"] [
-        div [class "left p2"] [
-            a [
-                href "#/home",
-                class "btn regular"
-            ] (
-                appName Home
-            )
+    div [class "clearfix mb2 white bg-black"]
+        [ div [class "left p2"]
+            [ a
+                [ href "#/home"
+                , class "btn regular"
+                ] 
+                ( appName Home )
+            ]
         ]
-    ]
 
 
 apps : List Route
-apps = [Todo, Incr, Dice, Togg, Omkj]
+apps =
+    [ Todo
+    , Incr
+    , Dice
+    , Togg
+    , Omkj
+    ]
 
 
 appShortName : Route -> String
@@ -109,24 +121,24 @@ appName app =
         Omkj -> ("Omikuji", "random")
         NotFoundRoute -> ("Not Found", "times-hexagon")
     in
-    [
-        i [class <| "fa fa-" ++ icon ++ " mr1"] [],
-        text name
-    ]
+        [ i [class <| "fa fa-" ++ icon ++ " mr1"] []
+        , text name
+        ]
 
 
 list : Html Msg
 list =
-    div [class "p2"] [
-        ul [] (apps |> List.map row)
+    div [class "p2"]
+    [ ul [] (apps |> List.map row)
     ]
 
 
 row : Route -> Html Msg
 row app =
-    li [] [
-        a [
-            href <| "#/" ++ (appShortName app),
-            class "btn regular"
-        ] (appName app)
-    ]
+    li [] 
+        [ a
+            [ href <| "#/" ++ (appShortName app)
+            , class "btn regular"
+            ]
+            (appName app)
+        ]
